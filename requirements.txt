@@ -1,0 +1,35 @@
+# Core Data Science
+pandas
+numpy
+scikit-learn
+scipy
+python-dotenv
+pyyaml
+tqdm
+
+# Machine Learning Models
+lightgbm
+catboost
+
+# Experiment Tracking
+mlflow
+
+# DVC + Remote Storage (DagsHub, GDrive, S3)
+dvc
+
+
+# DagsHub Client
+dagshub
+
+# Visualization
+matplotlib
+seaborn
+plotly
+
+# Jupyter Notebooks
+jupyter
+ipykernel
+
+# Utility
+joblib
+requests
