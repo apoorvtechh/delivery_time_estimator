@@ -1,0 +1,57 @@
+stages:
+  clean_data:
+    cmd: python src/data/data_cleaning.py
+    deps:
+      - src/data/data_cleaning.py
+      - data/raw/swiggy.csv
+    outs:
+      - data/cleaned/swiggy_cleaned.csv
+  split_data:
+    cmd: python src/data/data_processing.py
+    deps:
+      - src/data/data_processing.py
+      - data/cleaned/swiggy_cleaned.csv
+      - params.yaml
+    outs:
+      - data/interim/train.csv
+      - data/interim/test.csv
+    params:
+      - Data_Preparation.test_size
+      - Data_Preparation.random_state
+  preprocess:
+    cmd: python src/features/data_preprocessing.py
+    deps:
+      - src/features/data_preprocessing.py
+      - data/interim/train.csv
+      - data/interim/test.csv
+    outs:
+      - data/processed/train_trans.csv
+      - data/processed/test_trans.csv
+      - models/preprocessor.joblib
+  train:
+    cmd: python src/models/train_model.py
+    deps:
+      - src/models/train_model.py
+      - data/processed/train_trans.csv
+      - params.yaml
+    outs:
+      - models/catboost_model.joblib
+      - models/lgbm_model.joblib
+
+  evaluate:
+    cmd: python src/models/evaluation.py
+    deps:
+      - src/models/evaluation.py
+      - data/processed/test_trans.csv
+      - models/catboost_model.joblib
+      - models/lgbm_model.joblib
+      - params.yaml
+  register_model:
+    cmd: python src/models/register.py
+    deps:
+      - src/models/register.py
+      - models/catboost_model.joblib
+      - models/lgbm_model.joblib
+      - data/processed/test_trans.csv
+      - params.yaml
+    outs: []

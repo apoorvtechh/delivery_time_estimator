@@ -1,0 +1,28 @@
+Data_Preparation:
+  test_size: 0.2
+  random_state: 42
+Train:
+  LightGBM:
+    n_estimators: 822
+    learning_rate: 0.01154017946007429
+    num_leaves: 86
+    max_depth: 14
+    subsample: 0.6301623646219834
+    colsample_bytree: 0.9533450356915265
+    min_child_samples: 50
+    reg_alpha: 0.8141530760226819
+    reg_lambda: 0.25354469684181496
+    random_state: 42
+
+  CatBoost:
+    depth: 10
+    iterations: 1062
+    learning_rate: 0.012690362728359193
+    l2_leaf_reg: 0.10715589227169486
+    loss_function: "RMSE"
+    random_seed: 42
+    verbose: False
+
+  weights:
+    cat: 0.4
+    lgbm: 0.6
