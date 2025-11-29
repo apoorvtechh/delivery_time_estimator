@@ -1,101 +1,106 @@
-import os
 import mlflow
+import mlflow.sklearn
+import os
 import joblib
-import yaml
 import logging
+import yaml
 from pathlib import Path
-from dotenv import load_dotenv  # NEW
+from dotenv import load_dotenv
 
-# ================================================================
+# ============================================================
 # LOGGER
-# ================================================================
+# ============================================================
 logger = logging.getLogger("model_registry")
 logger.setLevel(logging.INFO)
-
 handler = logging.StreamHandler()
 handler.setFormatter(logging.Formatter(
     "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 ))
 logger.addHandler(handler)
 
+# ============================================================
+# LOAD ENV (.env)
+# ============================================================
+load_dotenv()
+tracking_uri = os.getenv("MLFLOW_TRACKING_URI")
+
+if tracking_uri is None:
+    raise ValueError("❌ MLFLOW_TRACKING_URI not found in .env")
+
+logger.info(f"🚀 Using MLflow Tracking URI: {tracking_uri}")
+mlflow.set_tracking_uri(tracking_uri)
+
+# ============================================================
+# MAIN
+# ============================================================
 if __name__ == "__main__":
+
     root = Path(__file__).parent.parent.parent
+    model_dir = root / "models"
 
-    # -----------------------------
-    # 1. Load .env and tracking URI
-    # -----------------------------
-    env_path = root / ".env"
-    load_dotenv(env_path)  # this reads MLFLOW_TRACKING_URI
+    # Paths
+    cat_path = model_dir / "catboost_model.joblib"
+    lgb_path = model_dir / "lgbm_model.joblib"
+    preprocess_path = model_dir / "preprocessor.joblib"
+    params_path = root / "params.yaml"
 
-    mlflow_uri = os.getenv("MLFLOW_TRACKING_URI")
-    if not mlflow_uri:
-        raise ValueError("MLFLOW_TRACKING_URI not found in .env")
+    # Load params (weights included)
+    params = yaml.safe_load(open(params_path))
+    w_cat = params["Train"]["weights"]["cat"]
+    w_lgb = params["Train"]["weights"]["lgbm"]
 
-    mlflow.set_tracking_uri(mlflow_uri)
-    logger.info(f"🚀 Using MLflow Tracking URI: {mlflow_uri}")
-
-    # -----------------------------
-    # 2. Load params + models
-    # -----------------------------
-    params = yaml.safe_load(open(root / "params.yaml"))
-    weights = params["Train"]["weights"]
-
-    cat_path = root / "models" / "catboost_model.joblib"
-    lgb_path = root / "models" / "lgbm_model.joblib"
-
-    logger.info("📥 Loading saved models...")
-    cat_model = joblib.load(cat_path)
-    lgb_model = joblib.load(lgb_path)
-
-    # -----------------------------
-    # 3. Set experiment
-    # -----------------------------
+    # Experiment
     experiment_name = "Model Registration FOR TIME ESTIMATION"
     mlflow.set_experiment(experiment_name)
 
-    # -----------------------------
-    # 4. Log models inside a run
-    # -----------------------------
-    with mlflow.start_run(run_name="Register Saved Models") as run:
+    with mlflow.start_run() as run:
+
         run_id = run.info.run_id
+        logger.info(f"📌 Started MLflow Run: {run_id}")
 
-        mlflow.log_params({
-            "weight_cat": weights["cat"],
-            "weight_lgbm": weights["lgbm"],
-        })
+        # ---------------------------------------------
+        # Load artifacts
+        # ---------------------------------------------
+        cat_model = joblib.load(cat_path)
+        lgbm_model = joblib.load(lgb_path)
+        preprocessor = joblib.load(preprocess_path)
 
-        # Log raw joblib artifacts too (optional)
-        mlflow.log_artifact(str(cat_path))
-        mlflow.log_artifact(str(lgb_path))
+        logger.info("Loaded CatBoost, LightGBM & Preprocessor successfully.")
 
-        # Log models as MLflow model artifacts
+        # ---------------------------------------------
+        # Log raw artifacts
+        # ---------------------------------------------
+        mlflow.log_artifact(cat_path, artifact_path="models")
+        mlflow.log_artifact(lgb_path, artifact_path="models")
+        mlflow.log_artifact(preprocess_path, artifact_path="preprocessor")
+
+        # ---------------------------------------------
+        # Log ensemble weights
+        # ---------------------------------------------
+        mlflow.log_param("weight_catboost", w_cat)
+        mlflow.log_param("weight_lightgbm", w_lgb)
+
+        # ---------------------------------------------
+        # Save combined ensemble pipeline
+        # ---------------------------------------------
+        combined_package = {
+            "preprocessor": preprocessor,
+            "catboost": cat_model,
+            "lightgbm": lgbm_model,
+            "weights": {
+                "cat": w_cat,
+                "lgbm": w_lgb,
+            }
+        }
+
+        logger.info("Packaging preprocessor + models + weights...")
+
         mlflow.sklearn.log_model(
-            sk_model=cat_model,
-            artifact_path="catboost_model"
-        )#added
-        mlflow.sklearn.log_model(
-            sk_model=lgb_model,
-            artifact_path="lgbm_model"
+            sk_model=combined_package,
+            artifact_path="full_pipeline",
+            registered_model_name="Swiggy-Ensemble-Model"
         )
 
-    # -----------------------------
-    # 5. Register both models
-    # -----------------------------
-    cat_uri = f"runs:/{run_id}/catboost_model"
-    lgb_uri = f"runs:/{run_id}/lgbm_model"
+        logger.info("🎉 Swiggy-Ensemble-Model registered successfully!")
 
-    logger.info("🔄 Registering CatBoost model...")
-    cat_version = mlflow.register_model(
-        model_uri=cat_uri,
-        name="Swiggy-CatBoost-Model"
-    )
-
-    logger.info("🔄 Registering LightGBM model...")
-    lgb_version = mlflow.register_model(
-        model_uri=lgb_uri,
-        name="Swiggy-LightGBM-Model"
-    )
-
-    logger.info(f"🏆 CatBoost Registered as version: {cat_version.version}")
-    logger.info(f"🏆 LightGBM Registered as version: {lgb_version.version}")
     logger.info("✅ Model registration completed successfully.")
