@@ -2,10 +2,7 @@
 # Base Image
 # ----------------------------------------
 FROM python:3.12-slim
-# ----------------------------------------
-# Disable AWS metadata to avoid "--region" error during Docker build
-# ----------------------------------------
-ENV AWS_EC2_METADATA_DISABLED=true
+
 # ----------------------------------------
 # Install system dependencies for LightGBM & CatBoost
 # ----------------------------------------
