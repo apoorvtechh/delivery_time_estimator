@@ -4,6 +4,8 @@ pydantic
 pandas
 numpy
 scikit-learn
+catboost
+lightgbm
 mlflow
 python-dotenv
 requests

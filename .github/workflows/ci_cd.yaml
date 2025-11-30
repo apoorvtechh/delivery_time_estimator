@@ -54,7 +54,7 @@ jobs:
       # ----------------------------------------
       # 6. Test Model Registry via EC2 MLflow
       # ----------------------------------------
-      - name: Test Model Registry
+      - name: Test Model Loading
         env:
           MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
         run: |
