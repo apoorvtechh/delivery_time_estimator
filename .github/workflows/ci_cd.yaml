@@ -90,7 +90,7 @@ jobs:
       # ------------------------------------------------------
       - name: Build, tag, and push docker image to Amazon ECR
         env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REGISTRY: ${{ secrets.ECR_REPOSITORY_URI }}
           REPOSITORY: ${{ secrets.ECR_REPOSITORY_URI }}
           IMAGE_TAG: latest
         run: |
