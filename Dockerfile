@@ -46,12 +46,6 @@ COPY models/preprocessor.joblib models/preprocessor.joblib
 COPY scripts/data_clean_utils.py scripts/data_clean_utils.py
 
 # ----------------------------------------
-# Environment Variables (MLflow Tracking URI)
-# ----------------------------------------
-ENV MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI}
-ENV PYTHONUNBUFFERED=1
-
-# ----------------------------------------
 # Expose FastAPI port
 # ----------------------------------------
 EXPOSE 8000
