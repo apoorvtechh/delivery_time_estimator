@@ -1,27 +1,35 @@
+# ------------------------------
 # FastAPI + Server
+# ------------------------------
 fastapi==0.110.2
 uvicorn[standard]==0.27.1
+pydantic==2.7.1
+python-dotenv==1.0.1
 
-# Core ML dependencies
+# ------------------------------
+# Core ML + Data Libraries
+# ------------------------------
 numpy==1.26.4
 pandas==2.2.1
 scikit-learn==1.4.2
+scipy==1.12.0
+python-dateutil==2.9.0
+setuptools
 
-# LightGBM + CatBoost (your MLflow model requires these)
+# ------------------------------
+# ML Models (used inside MLflow bundle)
+# ------------------------------
 lightgbm==4.2.0
 catboost==1.2.5
 
-# MLflow for loading model from registry
+# ------------------------------
+# MLflow Model Registry + Loading
+# ------------------------------
 mlflow==2.11.3
-
-# For joblib transformer loading
 joblib==1.3.2
 
-# Optional but needed for preprocessing internals
-scipy==1.12.0
-
-# For datetime parsing reliability
-python-dateutil==2.9.0
-
-# Only if your model has cloudpickle flavor
-
+# ------------------------------
+# AWS communication (required for S3 artifact store)
+# ------------------------------
+boto3==1.34.131
+botocore==1.34.131
