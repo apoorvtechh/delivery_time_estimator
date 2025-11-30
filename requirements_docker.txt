@@ -1,0 +1,27 @@
+# FastAPI + Server
+fastapi==0.110.2
+uvicorn[standard]==0.27.1
+
+# Core ML dependencies
+numpy==1.26.4
+pandas==2.2.1
+scikit-learn==1.4.2
+
+# LightGBM + CatBoost (your MLflow model requires these)
+lightgbm==4.2.0
+catboost==1.2.5
+
+# MLflow for loading model from registry
+mlflow==2.11.3
+
+# For joblib transformer loading
+joblib==1.3.2
+
+# Optional but needed for preprocessing internals
+scipy==1.12.0
+
+# For datetime parsing reliability
+python-dateutil==2.9.0
+
+# Only if your model has cloudpickle flavor
+

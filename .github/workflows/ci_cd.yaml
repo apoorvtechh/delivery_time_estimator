@@ -7,64 +7,100 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-      # ----------------------------------------
-      # 1. Checkout Code
-      # ----------------------------------------
+      # ------------------------------------------------------
+      # 1. Checkout repository code
+      # ------------------------------------------------------
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # ----------------------------------------
-      # 2. Setup Python 3.11
-      # ----------------------------------------
+      # ------------------------------------------------------
+      # 2. Setup Python 3.11 (same as your project)
+      # ------------------------------------------------------
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: "pip"
 
-      # ----------------------------------------
-      # 3. Install Dependencies
-      # ----------------------------------------
+      # ------------------------------------------------------
+      # 3. Install dependencies for CI testing
+      # ------------------------------------------------------
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirement_action.txt
 
-      # ----------------------------------------
-      # 4. Configure AWS for DVC remote (S3)
-      # ----------------------------------------
-      - name: Configure AWS Credentials
+      # ------------------------------------------------------
+      # 4. Configure AWS Credentials for DVC S3 Access
+      # ------------------------------------------------------
+      - name: Configure AWS Credentials (for DVC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-north-1
 
-      # ----------------------------------------
-      # 5. DVC Pull (S3 remote)
-      # ----------------------------------------
-      - name: DVC Pull
+      # ------------------------------------------------------
+      # 5. Pull data from DVC remote (S3)
+      # ------------------------------------------------------
+      - name: DVC Pull from S3 Bucket
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           dvc pull
 
-      # ----------------------------------------
-      # 6. Test Model Registry via EC2 MLflow
-      # ----------------------------------------
+      # ------------------------------------------------------
+      # 6. Test MLflow Model Loading (EC2 MLflow Tracking URI)
+      # ------------------------------------------------------
       - name: Test Model Loading
         env:
           MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
         run: |
           pytest tests/test_model_loading.py -q
 
-      # ----------------------------------------
-      # 7. Test Model Performance
-      # ----------------------------------------
+      # ------------------------------------------------------
+      # 7. Test Model Performance (MAE < threshold)
+      # ------------------------------------------------------
       - name: Test Model Performance
         env:
           MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
         run: |
           pytest tests/test_performance.py -q
+
+      # ------------------------------------------------------
+      # 8. Configure AWS again for ECR (separate login)
+      # ------------------------------------------------------
+      - name: Configure AWS Credentials for ECR
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-north-1
+
+      # ------------------------------------------------------
+      # 9. Login to Amazon ECR
+      # ------------------------------------------------------
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ------------------------------------------------------
+      # 10. Build, Tag & Push Docker Image to ECR
+      # ------------------------------------------------------
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          REGISTRY: 193311515551.dkr.ecr.eu-north-1.amazonaws.com
+          REPOSITORY: ${{ secrets.ECR_REPOSITORY_URI }}
+          IMAGE_TAG: latest
+        run: |
+          echo "🏗 Building Docker image..."
+          docker build -t $REPOSITORY .
+
+          echo "🏷 Tagging image..."
+          docker tag $REPOSITORY:latest $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+          echo "📤 Pushing image to ECR..."
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+          echo "✅ Docker image pushed successfully!"
