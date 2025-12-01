@@ -69,7 +69,7 @@ jobs:
           pytest tests/test_performance.py -q
 
       # ------------------------------------------------------
-      # 8. Configure AWS again for ECR (separate login)
+      # 8. Configure AWS again for ECR 
       # ------------------------------------------------------
       - name: Configure AWS Credentials for ECR
         uses: aws-actions/configure-aws-credentials@v4
@@ -86,7 +86,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       # ------------------------------------------------------
-      # 10. Build, Tag & Push Docker Image to ECR g
+      # 10. Build, Tag & Push Docker Image to ECR 
       # ------------------------------------------------------
       - name: Build, tag, and push docker image to Amazon ECR
         env:
