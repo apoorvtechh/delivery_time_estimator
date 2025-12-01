@@ -8,13 +8,13 @@ jobs:
 
     steps:
       # ------------------------------------------------------
-      # 1. Checkout repository code
+      # 1. Checkout Code
       # ------------------------------------------------------
       - name: Checkout Code
         uses: actions/checkout@v4
 
       # ------------------------------------------------------
-      # 2. Setup Python 3.11 (same as your project)
+      # 2. Setup Python 3.11
       # ------------------------------------------------------
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -31,17 +31,17 @@ jobs:
           pip install -r requirement_action.txt
 
       # ------------------------------------------------------
-      # 4. Configure AWS Credentials for DVC S3 Access
+      # 4. Configure AWS Credentials for DVC (Account A)
       # ------------------------------------------------------
-      - name: Configure AWS Credentials (for DVC)
+      - name: Configure AWS Credentials for DVC (Account A)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}          # Account A (for DVC)
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # Account A
           aws-region: eu-north-1
 
       # ------------------------------------------------------
-      # 5. Pull data from DVC remote (S3)
+      # 5. Pull data from S3 using DVC
       # ------------------------------------------------------
       - name: DVC Pull from S3 Bucket
         env:
@@ -51,7 +51,7 @@ jobs:
           dvc pull
 
       # ------------------------------------------------------
-      # 6. Test MLflow Model Loading (EC2 MLflow Tracking URI)
+      # 6. Test MLflow Model Loading
       # ------------------------------------------------------
       - name: Test Model Loading
         env:
@@ -60,7 +60,7 @@ jobs:
           pytest tests/test_model_loading.py -q
 
       # ------------------------------------------------------
-      # 7. Test Model Performance (MAE < threshold)
+      # 7. Test Model Performance
       # ------------------------------------------------------
       - name: Test Model Performance
         env:
@@ -68,30 +68,34 @@ jobs:
         run: |
           pytest tests/test_performance.py -q
 
-      # ------------------------------------------------------
-      # 8. Configure AWS again for ECR (separate login)
-      # ------------------------------------------------------
-      - name: Configure AWS Credentials for ECR
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-north-1
+
 
       # ------------------------------------------------------
-      # 9. Login to Amazon ECR
+      # 8. Configure AWS FOR ECR + CodeDeploy (ACCOUNT B)
       # ------------------------------------------------------
-      - name: Login to Amazon ECR
+      - name: Configure AWS Credentials (Account B)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_B }}         # Account B
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_B }} # Account B
+          aws-region: eu-north-1
+
+
+      # ------------------------------------------------------
+      # 9. Login to Amazon ECR (ACCOUNT B)
+      # ------------------------------------------------------
+      - name: Login to Amazon ECR (Account B)
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+
       # ------------------------------------------------------
-      # 10. Build, Tag & Push Docker Image to ECR
+      # 10. Build, Tag, Push Docker Image to ECR (ACCOUNT B)
       # ------------------------------------------------------
-      - name: Build, tag, and push docker image to Amazon ECR
+      - name: Build, Tag, and Push Docker image to ECR (Account B)
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: delivery_time_estimator 
+          REPOSITORY: delivery-time-estimator
           IMAGE_TAG: latest
         run: |
           echo "🏗 Building Docker image..."
@@ -104,3 +108,6 @@ jobs:
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
           echo "✅ Docker image pushed successfully!"
+
+
+
