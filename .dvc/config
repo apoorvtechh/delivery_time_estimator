@@ -1,4 +1,4 @@
 [core]
     remote = myremote
 ['remote "myremote"']
-    url = s3://apoorv-mlfow-bucket
+    url = s3://time-estimator-deploy
