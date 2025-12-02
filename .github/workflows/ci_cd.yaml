@@ -104,28 +104,13 @@ jobs:
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
           echo "✅ Docker image pushed successfully!"
-      # Zip files for deployment
-      - name: Zip files for deployment
-        if: success()
-        run: |
-          zip -r deployment.zip appspec.yml deploy/scripts/install_dependencies.sh deploy/scripts/start_docker.sh
 
-      # Upload ZIP file to S3 (Account B)
-      - name: Upload ZIP to S3 (Account B)
-        if: success()
+      # --------------------------
+      # DEPLOY BY REFRESHING ASG
+      # --------------------------
+      - name: Refresh EC2 Auto Scaling Group
         run: |
-          aws s3 cp deployment.zip s3://time-estimator-deploy/deployment.zip
-
-      # Deploy to AWS CodeDeploy using ZIP (Account B)
-      - name: Deploy to AWS CodeDeploy (Account B)
-        if: success()
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID_B }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY_B }}
-              aws deploy create-deployment \
-          --application-name time_estimator_app \
-          --deployment-config-name CodeDeployDefault.OneAtATime \
-          --deployment-group-name time_estimator_deployment_group \
-          --s3-location bucket=time-estimator-deploy,key=deployment.zip,bundleType=zip \
-          --file-exists-behavior OVERWRITE \
-          --region eu-north-1
+          aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name delivery-asg \
+            --region eu-north-1 \
+            --preferences MinHealthyPercentage=100
