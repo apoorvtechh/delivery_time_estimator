@@ -1,5 +1,71 @@
-delivery_time_estimator
-==============================
+# 🚀 Delivery Time Estimator — Production-Grade ML System
+
+This repository contains the complete **production implementation** of a machine-learning powered  
+**Food Delivery Time (ETA) Prediction System**, built with:
+
+- **FastAPI** (real-time inference)
+- **AWS Auto Scaling Group (ASG)** (self-scaling backend)
+- **Application Load Balancer (ALB)** (traffic distribution)
+- **Docker + Amazon ECR** (containerized deployment)
+- **DVC** (ML pipeline & data versioning)
+- **MLflow** (experiment tracking + model registry)
+- **CI/CD (GitHub Actions)** (automated build & deploy)
+
+This is the final, scalable, cloud-ready version of the project.
+
+---
+
+## 📦 Project Summary
+
+The goal of this system is to predict **delivery time (ETA)** for food delivery platforms like Swiggy/Zomato based on:
+
+- Restaurant & customer GPS coordinates  
+- Delivery partner details  
+- Weather and traffic conditions  
+- Order timestamps & pickup delays  
+- Order type & vehicle type  
+- Engineered features like distance, time delta, etc.
+
+The system is designed for **real-time prediction at scale**, with AWS Auto Scaling ensuring reliability under heavy traffic.
+
+---
+
+## 🧠 Machine Learning Pipeline
+
+The ML workflow is fully managed using **DVC** and **MLflow**.
+
+### 🔹 Pipeline Stages
+- Data cleaning & preprocessing  
+- Feature engineering (Haversine distance, time deltas, LOF outlier removal)  
+- Exploratory Data Analysis  
+- Model training & comparison  
+- Hyperparameter tuning  
+- Weighted ensemble creation  
+- Model evaluation  
+- Packaging model for deployment  
+
+### 🔹 Best Performing Model
+A **weighted ensemble**:
+
+- **LightGBM** → 60%  
+- **CatBoost** → 40%  
+
+Saved and served via **MLflow Model Registry**.
+
+---
+
+## ⚙️ FastAPI Backend (Real-Time Inference)
+
+The inference API:
+
+- Loads the latest model from MLflow Registry  
+- Validates JSON input with **Pydantic**  
+- Applies preprocessing pipeline  
+- Runs inference in milliseconds  
+- Returns predicted ETA  
+
+
+
 
 End-to-end machine learning pipeline for delivery ETA prediction using DVC, MLflow, and modular data workflows.
 
