@@ -5,6 +5,8 @@ This repository contains the complete **experimentation workflow** for building 
 
 The purpose of this repo is to perform **deep data analysis**, **feature engineering**, and **model experimentation** before integrating the best-performing model into the production pipeline.
 
+**Synopsis**
+https://apoorvtechh-synopsis-eta-main-6f3ijc.streamlit.app/
 ---
 
 # 🚀 Project Overview
