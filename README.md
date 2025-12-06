@@ -1,4 +1,4 @@
-# 🛵 Swiggy Delivery Time Prediction – Experimentation (ML Research Repo)
+# 🛵 Food Delivery Time Prediction – Experimentation (ML Research Repo)
 
 This repository contains the complete **experimentation workflow** for building a real-world  
 **Delivery Time (ETA) Prediction System**, inspired by platforms like **Swiggy** and **Zomato**.
@@ -25,8 +25,6 @@ This repo includes **all Jupyter notebooks, EDA, model experiments, and preproce
 👉 **Production API Repository:**  
 🔗 https://github.com/apoorvtechh/delivery_time_estimator  
 
-👉 **Project Synopsis (Detailed Writeup):**  
-🔗 https://github.com/apoorvtechh/synopsis_eta  
 
 ---
 
