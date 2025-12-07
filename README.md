@@ -1,112 +1,115 @@
-# 🛵 Food Delivery Time Prediction – Experimentation (ML Research Repo)
+# 🛵 Food Delivery Time Prediction – Production-Ready ETA System
 
-This repository contains the complete **experimentation workflow** for building a real-world  
+This repository contains the **production-grade implementation** of a real-world  
 **Delivery Time (ETA) Prediction System**, inspired by platforms like **Swiggy** and **Zomato**.
 
-The purpose of this repo is to perform **deep data analysis**, **feature engineering**, and **model experimentation** before integrating the best-performing model into the production pipeline.
+The goal of this system is to provide **highly accurate delivery time predictions** using an optimized ML pipeline, automated deployment workflow, and scalable cloud infrastructure.
 
-**Synopsis**
-https://apoorvtechh-synopsis-eta-main-6f3ijc.streamlit.app/
+---
+
+## 📌 Live Synopsis Dashboard  
+🔗 https://apoorvtechh-synopsis-eta-main-6f3ijc.streamlit.app/
+
 ---
 
 # 🚀 Project Overview
 
-The objective of this project is to accurately predict **how long a delivery will take**, based on:
+The system predicts **how long a delivery will take** based on key operational and contextual features:
 
 - 👤 Delivery partner details  
 - 🍽 Restaurant & 📍 customer locations  
-- 🕒 Order & pickup timestamps  
+- 🕒 Order and pickup timestamps  
 - 🌦 Weather and 🚦 traffic conditions  
-- 🛵 Vehicle type & order type  
+- 🛵 Vehicle type & order category  
 - 🧭 Distance between restaurant → customer  
 
-This repo includes **all Jupyter notebooks, EDA, model experiments, and preprocessing steps** used during ML research.
+This repository includes the **final optimized ML model**, preprocessing pipelines, FastAPI backend, Docker setup, CI/CD automation, and AWS deployment infrastructure.
 
 👉 **Production API Repository:**  
 🔗 https://github.com/apoorvtechh/delivery_time_estimator  
-👉 **Experimentation Repository:**  
-🔗 https://github.com/apoorvtechh/Swiggy_project_Experimentation
 
+👉 **Experimentation Repository (EDA + Research):**  
+🔗 https://github.com/apoorvtechh/Swiggy_project_Experimentation  
 
 ---
 
-# 🧹 Data Preprocessing & Cleaning
+# 🧹 Data Preprocessing Pipeline
 
-### Key preprocessing steps performed:
+The production pipeline performs structured, reliable preprocessing:
 
-- Handling missing or corrupted values  
-- Normalizing & converting time-based features  
-- Creating engineered features like:  
-  - **Haversine Distance**  
+- Handling missing and corrupted values  
+- Converting and normalizing time-based features  
+- Feature engineering including:  
+  - **Haversine distance**  
   - **Order-to-pickup duration**  
   - **Peak hour indicators**  
-- Encoding all categorical columns  
-- Scaling + normalization for ML input  
-- Detecting abnormalities (invalid coordinates, illegal rider ages, synthetic entries)
+- Encoding categorical fields  
+- Scaling & normalization for model readiness  
+- Validation of coordinates, rider details, and outliers  
+
+This preprocessing flow ensures **consistent, reproducible performance** during real-time inference.
 
 ---
 
-# 📊 Exploratory Data Analysis (EDA)
+# 📊 Key Insights from EDA (Summarized for Production)
 
-This repo includes detailed EDA to understand Swiggy/Zomato-style delivery patterns:
+Insights leveraged during modeling:
 
-- Delivery partner behavior analysis  
-- Impact of **traffic density** on delivery speed  
-- Influence of **weather** on ETA  
-- Understanding city-wise differences  
-- Distribution of target variable (Time Taken)  
-- Missing data pattern heatmaps  
-- Correlation analysis across features  
+- Relationship between traffic density and delivery speed  
+- Weather impact on ETA variability  
+- Patterns in partner efficiency and route behavior  
+- City-wise delivery performance differences  
+- Target variable distribution shaping  
+- Correlation-driven feature selection  
 
-Visualizations helped shape better modeling decisions & feature engineering.
+These insights informed **final feature engineering and model choices**.
 
 ---
 
-# 🧪 Model Experimentation
+# 🤖 Model Architecture (Production Version)
 
-Multiple machine learning models were trained, evaluated, and compared, including:
+Multiple ML models were benchmarked, and the final system uses a **Weighted Ensemble** for best real-world performance:
 
-### 🤖 ML Models Tested
-
+### Models Selected:
 - **LightGBM**  
 - **CatBoost**  
-- **Support Vector Machine (SVM)**  
-- **XGBoost Regressor**  
-- **Random Forest Regressor**  
 
-### 📈 Metrics Evaluated
-
-Each model was compared on:
-
-- **MAE (Mean Absolute Error)**  
-- **RMSE (Root Mean Squared Error)**  
-- **R² Score**  
-
-These experiments helped determine the top-performing models, which were later fine-tuned using Optuna and deployed as a **weighted ensemble** in the final production system.
+Additional models evaluated during experimentation:
+- XGBoost  
+- SVM  
+- Random Forest  
 
 ---
 
-# 📂 Repository Purpose
+# 📈 Model Performance (Final Metrics)
 
-This repo serves as:
+The production ensemble achieves:
 
-✔ A **sandbox** for experimentation  
-✔ A record of all **EDA, transformations, and models tried**  
-✔ A complementary research repo to the final deployed system  
-✔ An essential part of the **ML lifecycle** before deployment  
+- **MAE ≈ 3.01 minutes**  
+- **R² ≈ 0.84**  
 
-For actual production code, API development, CI/CD, Docker deployment, and AWS scaling setup, please refer to the final repo below:
-
-👉 **Production Deployment Repo:**  
-https://github.com/apoorvtechh/delivery_time_estimator  
+This combination balances **accuracy, speed, and stability**, making it ideal for real-time prediction scenarios.
 
 ---
 
-# 👨‍💻 Author  
-**Apoorv Gupta**  
-📧 Email: **apoorvtechh@gmail.com**  
-🐙 GitHub: https://github.com/apoorvtechh  
+# ⚙️ Production Deployment Stack
+
+The system is deployed using a scalable ML engineering stack:
+
+- **FastAPI** for real-time inference  
+- **Docker** for containerized execution  
+- **GitHub Actions** for CI/CD automation  
+- **AWS EC2 + ECR + S3** for cloud hosting  
+- **AWS Auto Scaling + Application Load Balancer (ALB)** for high availability  
+- Load-tested with **100k+ requests** ensuring reliable scaling  
 
 ---
+
+If you want, I can help you add:
+
+✔ Architecture diagram  
+✔ Demo GIF  
+✔ API documentation section  
+✔ Project badge section (shields.io)
 
 
